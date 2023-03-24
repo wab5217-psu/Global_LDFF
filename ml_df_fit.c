@@ -70,10 +70,10 @@
 #define MAX_V 3000.0
 #define MAX_V_ERR 500.0
 #define MIN_V 30.
-#define MIN_COUNT 4
+#define MIN_COUNT 5
 #define MAX_BEAMS 24
 #define MIN_LAT 55
-#define MAX_LAT 90
+#define MAX_LAT 89
 
 #define ML_LAT_0 55
 #define ML_DLAT 2
@@ -1764,7 +1764,8 @@ int main(int argc, char *argv[]){
       fprintf(stdout,"%d\n",ngrid);
       for( j=0; j<ngrid; j++ ){
 	
-	fprintf(stdout,"%5.2f %5.2f %8.3f %8.3f %8.3f %8.3f\n",grid[j].center_lat,grid[j].center_lon,rgMLDstr.ve[j],rgMLDstr.vn[j],rgMLDstr.ve_cov[j],rgMLDstr.vn_cov[j]);
+	fprintf(stdout,"%d %5.2f %5.2f %8.3f %8.3f %8.3f %8.3f\n",j,grid[j].center_lat,grid[j].center_lon,rgMLDstr.ve[j],rgMLDstr.vn[j],rgMLDstr.ve_cov[j],rgMLDstr.vn_cov[j]);
+	fflush(stdout);
       }
       
       neqn=3*ngrid-nedge+ndata;
@@ -1849,7 +1850,9 @@ int main(int argc, char *argv[]){
       for( jr=0; jr<2*ngrid; jr++)if( !isfinite(bb[jr]) )fprintf(stderr,"data %d %lf\n",jr,bb[jr]); 
     
       solution_l=calloc(2*ngrid,sizeof(double));
-    
+      for( jr=0; jr<ngrid; jr++)solution_l[jr]=rgMLDstr.ve[jr];
+      for( jr=ngrid; jr<2*ngrid; jr++)solution_l[jr]=rgMLDstr.vn[jr];
+      
       t1=clock();
       stat=cgls(2*ngrid,2*ngrid,aa,bb,solution_l);
       t2=clock();

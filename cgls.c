@@ -72,10 +72,14 @@ int cgls(int m,int n,double* a[],double* b, double* x){
   int itmax=500;
   int itr=0;
   int imax;
-  /* double dtol=.2; */
-  double dtol=1e-5;
+  double dtol=1.0;
+  /* double dtol=1e-5; */
   double rmax=10;
   double drmax=100;
+  double drmax_last=1000;
+  double dmax=1000;
+  double dmax_last=1000;
+  
   int nan_flag=0;
   
   FILE *fp;
@@ -83,7 +87,9 @@ int cgls(int m,int n,double* a[],double* b, double* x){
   fp=fopen("deltas","w");
 
   /* while( alpha*drmax/rmax > dtol && itr<itmax){ */
-  while( alpha*drmax/x_norm > dtol && itr<itmax){
+  /* while( alpha*drmax/x_norm > dtol && itr<itmax){  /\* compares largest change in residual of a single element to the norm of the model vector *\/ */
+  /* while( fabs(alpha*drmax-alpha*drmax_last) > dtol && itr<itmax){  /\* compares largest change in residual to that of the previous iteration *\/ */
+  while( fabs(alpha*dmax) > dtol && itr<itmax){  /* compares largest change in residual to that of the previous iteration */
     itr++;
     
     /*  alpha = ||AT Res ||^2 / ||A d ||^2  */
@@ -96,7 +102,7 @@ int cgls(int m,int n,double* a[],double* b, double* x){
 
     alpha=(ATR_norm_l*ATR_norm_l)/(AD_norm*AD_norm);
     
-    fprintf(stderr,"cgls iter:%d %lf %lf\n",itr,AD_norm,ATR_norm);
+    fprintf(stderr,"cgls iter:%d %lf %lf %lf\n",itr,AD_norm,ATR_norm,alpha*dmax);
 
     nan_flag=0;
     for( jc=0; jc<n; jc++ )if(!isfinite(d[jc]) || !isfinite(alpha)){
@@ -132,8 +138,13 @@ int cgls(int m,int n,double* a[],double* b, double* x){
     imax=cblas_idamax(m,res,1);
     rmax=fabs(res[imax]);
     imax=cblas_idamax(m,AD,1);
+    drmax_last=drmax;
     drmax=fabs(AD[imax]);
-    
+
+    dmax_last=dmax;
+    imax=cblas_idamax(m,d,1);
+    dmax=fabs(d[imax]);
+
     delta = x_norm/res_norm;
     delta_x=(x_norm-x_norm_last)/x_norm;
     fprintf(fp,"%d  %le %le %le %le %le\n",itr,alpha*drmax,rmax,alpha*drmax/rmax,res_norm,alpha*drmax/x_norm);
