@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include "terminator.h"
+
+extern int sub_sphazm(double Alon,double Alat,double Clon,double Clat,double *azm,double *range);
 
 int sub_sphcal(double Alon, double Alat, double azm, double range, double *Clon, double *Clat){
 

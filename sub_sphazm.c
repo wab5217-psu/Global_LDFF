@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-/* #include "terminator.h" */
 
 int sub_sphazm(double Alon,double Alat,double Clon,double Clat,double *azm,double *range){
   /*
