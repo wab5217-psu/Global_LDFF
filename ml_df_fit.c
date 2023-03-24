@@ -40,13 +40,15 @@
 #include "aacgm.h"
 #include "mlt_v2.h"
 #include "igrflib.h"
-#include "terminator.h"
 
 #include <gsl/gsl_math.h> 
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_blas.h>
+
+extern int sub_sphazm(double Alon,double Alat,double Clon,double Clat,double *azm,double *range);
+extern int sub_sphcal(double Alon, double Alat, double azm, double range, double *Clon, double *Clat);
 
 #define LENGTH(x,y) sqrt(x*x+y*y)
 
